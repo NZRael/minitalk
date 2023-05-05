@@ -1,22 +1,35 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_strrchr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/07 16:06:12 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/03 13:06:32 by sboetti          ###   ########.fr       */
+/*   Created: 2022/11/10 10:15:43 by sboetti           #+#    #+#             */
+/*   Updated: 2023/04/07 13:26:46 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#include "../libft.h"
 
-# include <stdio.h>
-# include <unistd.h>
-# include <signal.h>
-# include <stdlib.h>
-# include "./libft/libft.h"
+char	*ft_strrchr(const char *s, int c)
+{
+	char	a;
+	int		i;
+	int		ok;
 
-#endif
+	i = 0;
+	a = (char)c;
+	ok = -1;
+	if (!a)
+		return ((char *)&s[ft_strlen(s)]);
+	while (s[i])
+	{
+		if (s[i] == a)
+			ok = i;
+		i++;
+	}
+	if (ok == -1)
+		return (0);
+	return ((char *)&s[ok]);
+}

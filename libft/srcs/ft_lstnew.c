@@ -1,22 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minitalk.h                                         :+:      :+:    :+:   */
+/*   ft_lstnew.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/07 16:06:12 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/03 13:06:32 by sboetti          ###   ########.fr       */
+/*   Created: 2022/11/17 10:39:47 by sboetti           #+#    #+#             */
+/*   Updated: 2023/04/07 12:27:49 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINITALK_H
-# define MINITALK_H
+#include "../libft.h"
 
-# include <stdio.h>
-# include <unistd.h>
-# include <signal.h>
-# include <stdlib.h>
-# include "./libft/libft.h"
+t_list	*ft_lstnew(void *content)
+{
+	t_list	*elem;
 
-#endif
+	elem = malloc(sizeof(t_list));
+	if (elem == NULL)
+		return (NULL);
+	elem->content = content;
+	elem->next = NULL;
+	return (elem);
+}

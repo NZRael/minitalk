@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/07 16:06:09 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/05 11:17:37 by sboetti          ###   ########.fr       */
+/*   Updated: 2023/05/05 11:35:43 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ void	charcounter(int sig)
 	if (sig == SIGUSR1)
 		count++;
 	if (count == (g_len * 8) + 8)
-		return ;
+		ft_printf("Signal Received !\n");
 }
 
 void	send_bit(int pid, char *argv)
