@@ -5,14 +5,12 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/07 16:06:09 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/05 11:17:37 by sboetti          ###   ########.fr       */
+/*   Created: 2023/05/09 09:38:49 by llaurenc          #+#    #+#             */
+/*   Updated: 2023/05/22 16:55:02 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
-
-size_t	g_len;
 
 void	check_client(int argc, char **argv)
 {
@@ -31,66 +29,36 @@ void	check_client(int argc, char **argv)
 	return ;
 }
 
-void	charcounter(int sig)
+void	send_bits(int pid, char c)
 {
-	static size_t	count = 0;
+	int		i;
 
-	if (sig == SIGUSR1)
-		count++;
-	if (count == (g_len * 8) + 8)
-		return ;
-}
-
-void	send_bit(int pid, char *argv)
-{
-	int	i;
-	int	x;
-	int	tmp;
-
-	x = 0;
-	while (argv[x])
+	i = 7;
+	while (i >= 0)
 	{
-		tmp = argv[x];
-		i = 8;
-		while (i--)
-		{
-			usleep(70);
-			if ((tmp & 1))
-				kill(pid, SIGUSR1);
-			else
-				kill(pid, SIGUSR2);
-			tmp = tmp >> 1;
-			pause();
-		}
-		x++;
+		if ((c >> i) & 1)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		usleep(700);
+		i--;
 	}
 }
 
-void	endofmsg(int pid)
+int	main(int ac, char **av)
 {
-	int	i;
+	int		pid;
+	char	*msg;
+	int		i;
 
-	i = 8;
-	send_bit(pid, "\n");
-	while (i--)
+	check_client(ac, av);
+	i = 0;
+	pid = ft_atoi(av[1]);
+	msg = av[2];
+	while (msg[i])
 	{
-		usleep(200);
-		kill(pid, SIGUSR2);
+		send_bits(pid, msg[i]);
+		i++;
 	}
-}
-
-int	main(int argc, char **argv)
-{
-	pid_t	pid;
-
-	check_client(argc, argv);
-	pid = ft_atoi(argv[1]);
-	if (pid <= 0)
-		return (1);
-	g_len = ft_strlen(argv[2]);
-	signal(SIGUSR1, charcounter);
-	send_bit(pid, argv[2]);
-	endofmsg(ft_atoi(argv[1]));
-	usleep(5);
 	return (0);
 }

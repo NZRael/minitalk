@@ -5,52 +5,40 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/07 16:06:01 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/05 11:05:07 by sboetti          ###   ########.fr       */
+/*   Created: 2023/05/09 09:20:43 by llaurenc          #+#    #+#             */
+/*   Updated: 2023/05/22 12:56:39 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-void	my_handler(int sig, siginfo_t *siginfo, void *vouad)
+void	get_bits(int sig)
 {
-	static int				c = 0;
-	static int				i = 1;
-	static pid_t			pid = 0;
+	static int		c = 0;
+	static int		bit = 7;
 
-	(void)vouad;
-	if (!pid)
-		pid = siginfo->si_pid;
 	if (sig == SIGUSR1)
-		c += 256;
-	c = c >> 1;
-	if (++i >= 9)
+		c += 1 << bit;
+	bit--;
+	if (bit == -1)
 	{
-		if (c == 0)
-			pid = 0;
-		else
-			ft_printf("%c", c);
-		i = 1;
+		ft_printf("%c", c);
+		bit = 7;
 		c = 0;
 	}
-	usleep(70);
-	if (pid)
-		kill(pid, SIGUSR1);
 }
 
-int	main(int argc, char **argv)
+int	main(void)
 {
-	struct sigaction	s;
+	struct sigaction	sig;
+	pid_t				pid;
 
-	(void)argv;
-	if (argc != 1)
-		return (1);
-	ft_printf("%d\n", getpid());
-	s.sa_sigaction = &my_handler;
-	sigaction(SIGUSR1, &s, NULL);
-	sigaction(SIGUSR2, &s, NULL);
+	pid = getpid();
+	ft_printf("PID : %d\n", pid);
+	sig.sa_handler = get_bits;
+	sig.sa_flags = 0;
+	sigaction(SIGUSR1, &sig, NULL);
+	sigaction(SIGUSR2, &sig, NULL);
 	while (1)
-	{
-	}
-	return (0);
+		pause();
 }

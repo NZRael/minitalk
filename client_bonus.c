@@ -5,14 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/04/07 16:06:09 by sboetti           #+#    #+#             */
-/*   Updated: 2023/05/05 11:35:43 by sboetti          ###   ########.fr       */
+/*   Created: 2023/05/09 09:59:53 by llaurenc          #+#    #+#             */
+/*   Updated: 2023/05/22 16:34:28 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
 
-size_t	g_len;
+int	g_global = 0;
 
 void	check_client(int argc, char **argv)
 {
@@ -31,66 +31,54 @@ void	check_client(int argc, char **argv)
 	return ;
 }
 
-void	charcounter(int sig)
+void	msg_send(int sig)
 {
-	static size_t	count = 0;
-
-	if (sig == SIGUSR1)
-		count++;
-	if (count == (g_len * 8) + 8)
-		ft_printf("Signal Received !\n");
+	(void)sig;
+	ft_printf("Signal send.\n");
 }
 
-void	send_bit(int pid, char *argv)
+void	add_global(int signum)
 {
-	int	i;
-	int	x;
-	int	tmp;
+	(void)signum;
+	g_global++;
+}
 
-	x = 0;
-	while (argv[x])
+void	send_bits(int pid, char c)
+{
+	int		i;
+
+	i = 7;
+	while (i >= 0)
 	{
-		tmp = argv[x];
-		i = 8;
-		while (i--)
-		{
-			usleep(70);
-			if ((tmp & 1))
-				kill(pid, SIGUSR1);
-			else
-				kill(pid, SIGUSR2);
-			tmp = tmp >> 1;
-			pause();
-		}
-		x++;
+		g_global = 0;
+		if ((c >> i) & 1)
+			kill(pid, SIGUSR1);
+		else
+			kill(pid, SIGUSR2);
+		while (g_global == 0)
+			;
+		usleep(300);
+		i--;
 	}
 }
 
-void	endofmsg(int pid)
+int	main(int ac, char **av)
 {
-	int	i;
+	int		pid;
+	char	*msg;
+	int		i;
 
-	i = 8;
-	send_bit(pid, "\n");
-	while (i--)
+	check_client(ac, av);
+	i = 0;
+	signal(SIGUSR1, msg_send);
+	pid = ft_atoi(av[1]);
+	msg = av[2];
+	signal(SIGUSR2, &add_global);
+	while (msg[i])
 	{
-		usleep(200);
-		kill(pid, SIGUSR2);
+		send_bits(pid, msg[i]);
+		i++;
 	}
-}
-
-int	main(int argc, char **argv)
-{
-	pid_t	pid;
-
-	check_client(argc, argv);
-	pid = ft_atoi(argv[1]);
-	if (pid <= 0)
-		return (1);
-	g_len = ft_strlen(argv[2]);
-	signal(SIGUSR1, charcounter);
-	send_bit(pid, argv[2]);
-	endofmsg(ft_atoi(argv[1]));
-	usleep(5);
+	send_bits(pid, '\0');
 	return (0);
 }
