@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 09:59:53 by llaurenc          #+#    #+#             */
-/*   Updated: 2023/05/22 16:34:28 by sboetti          ###   ########.fr       */
+/*   Created: 2023/05/09 09:59:53 by sboetti           #+#    #+#             */
+/*   Updated: 2023/05/24 11:28:25 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void	send_bits(int pid, char c)
 			kill(pid, SIGUSR2);
 		while (g_global == 0)
 			;
-		usleep(300);
+		usleep(100);
 		i--;
 	}
 }

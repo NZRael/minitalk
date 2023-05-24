@@ -5,12 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sboetti <sboetti@student.42nice.fr>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/05/09 09:38:49 by llaurenc          #+#    #+#             */
-/*   Updated: 2023/05/22 16:55:02 by sboetti          ###   ########.fr       */
+/*   Created: 2023/05/09 09:38:49 by sboetti           #+#    #+#             */
+/*   Updated: 2023/05/24 11:28:38 by sboetti          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minitalk.h"
+
+int	g_global = 0;
 
 void	check_client(int argc, char **argv)
 {
@@ -29,6 +31,12 @@ void	check_client(int argc, char **argv)
 	return ;
 }
 
+void	add_global(int signum)
+{
+	(void)signum;
+	g_global++;
+}
+
 void	send_bits(int pid, char c)
 {
 	int		i;
@@ -36,11 +44,14 @@ void	send_bits(int pid, char c)
 	i = 7;
 	while (i >= 0)
 	{
+		g_global = 0;
 		if ((c >> i) & 1)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(700);
+		while (g_global == 0)
+			;
+		usleep(100);
 		i--;
 	}
 }
@@ -55,6 +66,7 @@ int	main(int ac, char **av)
 	i = 0;
 	pid = ft_atoi(av[1]);
 	msg = av[2];
+	signal(SIGUSR2, &add_global);
 	while (msg[i])
 	{
 		send_bits(pid, msg[i]);
